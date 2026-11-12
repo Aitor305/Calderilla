@@ -75,8 +75,20 @@ var T={
 var S=cargar(), tab='comida', hoy=iso(new Date()), fecha=hoy, vm=hoy.slice(0,7);
 
 function cargar(){try{var d=JSON.parse(localStorage.getItem(K));return norm(d)}catch(e){return norm(null)}}
-function norm(d){d=d||{};return{comida:d.comida||{},ejercicio:d.ejercicio||{},gastos:Array.isArray(d.gastos)?d.gastos:[]}}
-function guardar(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
+function norm(d){d=d||{};return{comida:d.comida||{},ejercicio:d.ejercicio||{},gastos:Array.isArray(d.gastos)?d.gastos:[],mod:+d.mod||0}}
+function idb(modo,fn){return new Promise(function(res){try{var q=indexedDB.open('calderilla-db',1);q.onupgradeneeded=function(){q.result.createObjectStore('k')};q.onerror=function(){res(null)};q.onsuccess=function(){try{var db=q.result,tx=db.transaction('k',modo),r=fn(tx.objectStore('k'));tx.oncomplete=function(){res(r&&r.result!==undefined?r.result:null);db.close()};tx.onerror=function(){res(null)}}catch(e){res(null)}}}catch(e){res(null)}})}
+function guardar(nuevo){if(nuevo!==false)S.mod=Date.now();var t=JSON.stringify(S);idb('readwrite',function(s){return s.put(t,K)});try{localStorage.setItem(K,t)}catch(e){}}
+function vacio(d){return !Object.keys(d.comida).length&&!Object.keys(d.ejercicio).length&&!d.gastos.length}
+function mejor(a,b){var x=a.mod||0,y=b.mod||0;if(y>x)return b;if(y<x)return a;return vacio(a)&&!vacio(b)?b:a}
+function sincronizar(){
+ idb('readonly',function(s){return s.get(K)}).then(function(t){
+  var c=[cargar()];
+  if(t){try{c.push(norm(JSON.parse(t)))}catch(e){}}
+  var g=c.reduce(mejor,S);
+  if(g!==S&&JSON.stringify(g)!==JSON.stringify(S)){S=g;render()}
+  guardar(false);
+ });
+}
 function iso(d){return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
 function aD(s){return new Date(s+'T12:00:00')}
 function num(n){return String(+Math.abs(n).toFixed(2)).replace('.',',')}
@@ -179,7 +191,9 @@ document.addEventListener('click',function(e){
  else if('imp' in d)document.getElementById('file').click();
 });
 document.addEventListener('change',function(e){if(e.target.id==='file'&&e.target.files[0])importar(e.target.files[0])});
-render();
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')sincronizar()});
+render();sincronizar();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
 </script>
 </body>
