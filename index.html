@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12394a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Calderilla">
+<title>Calderilla</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#eef3f4;--card:#fff;--ink:#12394a;--mute:#5c7581;--line:#d5e0e4;--ok:#1b8f63;--am:#b98300;--ko:#d6453d;--gr:#7b8f97;--tok:#dff2ea;--tam:#fbf0cf;--tko:#fbe4e2;--tgr:#e6ecee;--gold:#ffd23f;--goldink:#3a2a00;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0b2430;--card:#12394a;--ink:#eaf4f6;--mute:#8fb0ba;--line:#25566a;--ok:#4cc794;--am:#f0c14b;--ko:#ff7d78;--gr:#8fb0ba;--tok:#14473f;--tam:#4a4120;--tko:#4d2a30;--tgr:#1d4a5b;color-scheme:dark}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top,0) 0 calc(72px + env(safe-area-inset-bottom,0))}
+main{max-width:520px;margin:0 auto;padding:8px 16px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.top img{width:36px;height:36px;border-radius:9px}
+.top h1{margin:0;font-size:20px;letter-spacing:.2px}
+.dia{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dia button,.mes button{width:44px;height:44px;border:0;border-radius:50%;background:var(--card);color:var(--ink);font-size:22px}
+button:disabled{opacity:.3}
+.dia div{font-weight:600;text-transform:capitalize;text-align:center}
+.moneda{margin:12px auto 4px;width:140px;height:140px;border-radius:50%;background:var(--gold);color:var(--goldink);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 0 6px rgba(255,255,255,.35),inset 0 0 0 8px rgba(58,42,0,.25)}
+.moneda b{font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.moneda span{font-size:13px;margin-top:4px}
+.moneda.neg{background:var(--ko);color:#fff}
+.opts{display:grid;gap:8px;margin:14px 0}
+.opts.c3{grid-template-columns:repeat(3,1fr)}.opts.c2{grid-template-columns:repeat(2,1fr)}
+.opt{border:2px solid transparent;border-radius:14px;background:var(--card);color:var(--ink);font:inherit;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:70px;justify-content:center}
+.opt b{font-variant-numeric:tabular-nums}
+.opt.ok b{color:var(--ok)}.opt.am b{color:var(--am)}.opt.ko b{color:var(--ko)}.opt.gr b{color:var(--gr)}
+.opt.ok.on{background:var(--tok);border-color:var(--ok)}.opt.am.on{background:var(--tam);border-color:var(--am)}.opt.ko.on{background:var(--tko);border-color:var(--ko)}.opt.gr.on{background:var(--tgr);border-color:var(--gr)}
+.card{background:var(--card);border-radius:14px;padding:12px;margin-bottom:12px}
+.mes{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.mes div{font-weight:600;text-transform:capitalize}
+.mes button{width:38px;height:38px;font-size:20px;background:var(--bg)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .h{font-style:normal;text-align:center;font-size:12px;color:var(--mute)}
+.c{border:2px solid transparent;border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;padding:5px 0 3px;display:flex;flex-direction:column;align-items:center;min-height:46px}
+.c small{font-size:11px;min-height:14px;font-variant-numeric:tabular-nums}
+.c.ok{background:var(--tok)}.c.am{background:var(--tam)}.c.ko{background:var(--tko)}.c.gr{background:var(--tgr)}
+.c.hoy{font-weight:800}.c.sel{border-color:var(--ink)}
+.leyenda{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--mute);margin-top:8px}
+.leyenda i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0)}
+nav button{flex:1;border:0;background:none;color:var(--mute);padding:9px 0 7px;font:inherit;font-size:12px}
+nav button span{display:block;font-size:22px}
+nav button.act{color:var(--ink);font-weight:700}
+.saldo{font-size:42px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;margin:4px 0}
+.mut{color:var(--mute);font-size:14px;text-align:center}
+.fila{display:flex;gap:8px;margin-top:8px}
+input{font:inherit;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-width:0}
+.fila input:first-child{flex:1}.fila input.imp{width:88px}
+.btn{border:0;border-radius:10px;background:var(--ink);color:var(--card);font:inherit;font-weight:600;padding:11px 16px;flex:1}
+.btn.sec{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+.mov{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.mov:first-of-type{border-top:0}
+.mov button{border:0;background:none;color:var(--mute);font-size:18px;padding:4px 8px}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav id="nav"></nav>
+<script>
+var K='calderilla-v1';
+var T={
+ comida:{n:'Comida',ic:'🥗',o:[['b','Bien','ok'],['r','Regular','am'],['m','Mal','ko']],c:'c3'},
+ ejercicio:{n:'Ejercicio',ic:'🏃',o:[['B','Buen entrenamiento','ok'],['R','Entrenamiento regular','am'],['D','Descanso','gr'],['A','Ausencia','ko']],c:'c2'}
+};
+var S=cargar(), tab='comida', hoy=iso(new Date()), fecha=hoy, vm=hoy.slice(0,7);
+
+function cargar(){try{var d=JSON.parse(localStorage.getItem(K));return norm(d)}catch(e){return norm(null)}}
+function norm(d){d=d||{};return{comida:d.comida||{},ejercicio:d.ejercicio||{},gastos:Array.isArray(d.gastos)?d.gastos:[]}}
+function guardar(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
+function iso(d){return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
+function aD(s){return new Date(s+'T12:00:00')}
+function num(n){return String(+Math.abs(n).toFixed(2)).replace('.',',')}
+function eur(n){return(n<0?'−':'')+Math.abs(n).toFixed(2).replace('.',',')+' €'}
+function sg(n){return n===0?'0,00 €':(n>0?'+':'−')+Math.abs(n).toFixed(2).replace('.',',')+' €'}
+function sc(n){return n===0?'0':(n>0?'+':'−')+num(n)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+// Reglas: recorre el historial en orden y calcula lo que vale cada día
+function replay(t,ent){
+ var r={},a=0,b=0;
+ Object.keys(ent).sort().forEach(function(d){
+  var c=ent[d],v=0;
+  if(t==='comida'){
+   if(c==='b')a=a>=0?Math.min(3,a+1):1;
+   else if(c==='r')a=0;
+   else a=a<=0?Math.max(-3,a-1):-1;
+   v=a;
+  }else{
+   if(c==='B'){v=1+Math.min(2,.1*a);a++;b=0}
+   else if(c==='R'){v=.5;a=0;b=0}
+   else if(c==='A'){v=-(1+Math.min(2,.1*b));b++;a=0}
+  }
+  r[d]=Math.round(v*100)/100;
+ });
+ return r;
+}
+function suma(o){return Object.keys(o).reduce(function(s,k){return s+o[k]},0)}
+function ganado(){return suma(replay('comida',S.comida))+suma(replay('ejercicio',S.ejercicio))}
+function gastado(){return S.gastos.reduce(function(s,g){return s+g.imp},0)}
+function previo(t,f,c){var e=Object.assign({},S[t]);e[f]=c;return replay(t,e)[f]}
+
+function render(){
+ var n='';Object.keys(T).forEach(function(k){n+='<button data-tab="'+k+'" class="'+(tab===k?'act':'')+'"><span>'+T[k].ic+'</span>'+T[k].n+'</button>'});
+ n+='<button data-tab="hucha" class="'+(tab==='hucha'?'act':'')+'"><span>🐷</span>Hucha</button>';
+ document.getElementById('nav').innerHTML=n;
+ document.getElementById('app').innerHTML='<div class="top"><img src="icon.svg" alt=""><h1>Calderilla</h1></div>'+(tab==='hucha'?vHucha():vTema());
+}
+
+function vTema(){
+ var t=T[tab],ent=S[tab],vals=replay(tab,ent),c=ent[fecha],v=vals[fecha]||0;
+ var etq=fecha===hoy?'Hoy':aD(fecha).toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+ var h='<div class="dia"><button data-dia="-1" aria-label="Día anterior">‹</button><div>'+etq+'</div><button data-dia="1" aria-label="Día siguiente"'+(fecha>=hoy?' disabled':'')+'>›</button></div>';
+ h+='<div class="moneda'+(v<0?' neg':'')+'"><b>'+(c?sg(v):'—')+'</b><span>'+(c?'ese día':'sin anotar')+'</span></div>';
+ h+='<div class="opts '+t.c+'">'+t.o.map(function(o){
+  return '<button class="opt '+o[2]+(c===o[0]?' on':'')+'" data-opt="'+o[0]+'">'+o[1]+'<b>'+sg(previo(tab,fecha,o[0]))+'</b></button>'}).join('')+'</div>';
+ var y=+vm.slice(0,4),m=+vm.slice(5,7),off=(new Date(y,m-1,1).getDay()+6)%7,nd=new Date(y,m,0).getDate();
+ h+='<div class="card"><div class="mes"><button data-mes="-1" aria-label="Mes anterior">‹</button><div>'+new Date(y,m-1,1).toLocaleDateString('es-ES',{month:'long',year:'numeric'})+'</div><button data-mes="1" aria-label="Mes siguiente"'+(vm>=hoy.slice(0,7)?' disabled':'')+'>›</button></div><div class="cal">';
+ ['L','M','X','J','V','S','D'].forEach(function(x){h+='<i class="h">'+x+'</i>'});
+ for(var i=0;i<off;i++)h+='<i></i>';
+ for(var d=1;d<=nd;d++){
+  var f=iso(new Date(y,m-1,d)),k=ent[f],o=k&&t.o.filter(function(x){return x[0]===k})[0];
+  h+='<button class="c '+(o?o[2]:'')+(f===fecha?' sel':'')+(f===hoy?' hoy':'')+'" data-d="'+f+'"'+(f>hoy?' disabled':'')+'>'+d+'<small>'+(k?sc(vals[f]):'')+'</small></button>';
+ }
+ h+='</div><div class="leyenda">'+t.o.map(function(o){return '<span><i style="background:var(--t'+o[2]+')"></i>'+o[1]+'</span>'}).join('')+'</div></div>';
+ return h;
+}
+
+function vHucha(){
+ var s=ganado()-gastado();
+ var mv=S.gastos.map(function(g,i){return{g:g,i:i}}).reverse().slice(0,15).map(function(x){
+  return '<div class="mov"><span>'+esc(x.g.con)+' <small class="mut">'+aD(x.g.f).toLocaleDateString('es-ES',{day:'numeric',month:'short'})+'</small></span><span><b>'+eur(-x.g.imp)+'</b><button data-del="'+x.i+'" aria-label="Borrar gasto">✕</button></span></div>'}).join('');
+ return '<div class="card"><div class="mut">Disponible para caprichos</div><div class="saldo" style="color:var('+(s<0?'--ko':'--ok')+')">'+eur(s)+'</div><div class="mut">Ganado '+eur(ganado())+' · gastado '+eur(gastado())+'</div></div>'
+ +'<div class="card"><b>Gastar en un capricho</b><div class="fila"><input id="con" placeholder="¿En qué?" maxlength="40"><input id="imp" class="imp" type="number" inputmode="decimal" step="0.01" min="0" placeholder="€"></div><div class="fila"><button class="btn" data-gastar>Gastar</button></div></div>'
+ +'<div class="card"><b>Gastos recientes</b><div style="margin-top:6px">'+(mv||'<p class="mut">Aún no has gastado nada.</p>')+'</div></div>'
+ +'<div class="card"><b>Copia de seguridad</b><p class="mut" style="text-align:left;margin:6px 0">Los datos están solo en este móvil. Exporta una copia para pasarla a otro teléfono e impórtala allí.</p><div class="fila"><button class="btn sec" data-exp>Exportar copia</button><button class="btn sec" data-imp>Importar copia</button></div><input id="file" type="file" accept=".json,application/json" hidden></div>';
+}
+
+async function exportar(){
+ var txt=JSON.stringify({app:'calderilla',v:1,datos:S}),blob=new Blob([txt],{type:'application/json'});
+ var f=new File([blob],'calderilla-'+hoy+'.json',{type:'application/json'});
+ if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'Copia de Calderilla'});return}catch(e){if(e&&e.name==='AbortError')return}}
+ var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=f.name;document.body.appendChild(a);a.click();a.remove();
+}
+function importar(file){
+ var r=new FileReader();
+ r.onload=function(){
+  try{
+   var d=JSON.parse(r.result);if(d.app!=='calderilla'||!d.datos)throw 0;
+   if(!confirm('Esto reemplazará los datos que hay ahora en este móvil. ¿Continuar?'))return;
+   S=norm(d.datos);guardar();render();alert('Copia importada.');
+  }catch(e){alert('Ese archivo no es una copia válida de Calderilla.')}
+ };
+ r.readAsText(file);
+}
+
+document.addEventListener('click',function(e){
+ var b=e.target.closest('button');if(!b)return;var d=b.dataset;
+ if(d.tab){tab=d.tab;render();window.scrollTo(0,0)}
+ else if(d.dia){var x=aD(fecha);x.setDate(x.getDate()+ +d.dia);fecha=iso(x);if(fecha>hoy)fecha=hoy;vm=fecha.slice(0,7);render()}
+ else if(d.mes){var y=+vm.slice(0,4),m=+vm.slice(5,7)-1+ +d.mes;vm=iso(new Date(y,m,1)).slice(0,7);render()}
+ else if(d.d){fecha=d.d;render()}
+ else if(d.opt){if(S[tab][fecha]===d.opt)delete S[tab][fecha];else S[tab][fecha]=d.opt;guardar();render()}
+ else if('gastar' in d){
+  var con=document.getElementById('con').value.trim(),imp=parseFloat(document.getElementById('imp').value.replace(',','.'));
+  if(!con||!(imp>0))return;S.gastos.push({f:hoy,con:con,imp:imp});guardar();render();
+ }
+ else if(d.del){if(confirm('¿Borrar este gasto?')){S.gastos.splice(+d.del,1);guardar();render()}}
+ else if('exp' in d)exportar();
+ else if('imp' in d)document.getElementById('file').click();
+});
+document.addEventListener('change',function(e){if(e.target.id==='file'&&e.target.files[0])importar(e.target.files[0])});
+render();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+</script>
+</body>
+</html>
